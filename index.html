@@ -142,7 +142,7 @@
       const json = {};
       formData.forEach((value, key) => json[key] = value);
 
-      await fetch("https://script.google.com/macros/s/AKfycbwNYihtvfDj5Jm3ca-i98BbgwRup0D2W_095kpG2vIF5mGxgaNBeBCGmYduTeVO1RFp/exec", {
+      await fetch("https://script.google.com/macros/s/AKfycbzQEHumJ8D-Bhp3_9rRTaSN7zYNAbsyiks2BTYkQxNEAAXFh0L8Z-bKqjQtfqghEpUG/exec", {
         method: "POST",
         body: JSON.stringify(json),
         headers: { "Content-Type": "application/json" }
