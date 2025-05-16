@@ -3,38 +3,102 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Form Pelaporan Divisi - Upload Base64</title>
+  <title>Form Pelaporan Divisi - Kribangs Food</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    input, textarea, select { width: 100%; margin-top: 8px; padding: 8px; margin-bottom: 12px; }
-    .activity { border: 1px solid #ddd; padding: 10px; margin-top: 10px; }
-    button { background-color: orange; color: white; padding: 10px; border: none; width: 100%; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #f7a324, #fddc9b);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: white;
+      padding: 30px;
+      margin: 40px 0;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      max-width: 700px;
+      width: 100%;
+    }
+    h2 {
+      text-align: center;
+      color: #f7a324;
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: 500;
+      display: block;
+      margin-top: 15px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    input[type="file"] {
+      border: none;
+    }
+    button {
+      background-color: #f7a324;
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      margin-top: 20px;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #d9821b;
+    }
+    .activity {
+      background-color: #fdf5e6;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
-  <h2>Form Laporan Harian (Upload Gambar Base64)</h2>
-  <form id="form">
-    <label>Tanggal</label><input name="tanggal" type="date" required>
-    <label>Divisi</label>
-    <select name="divisi" required>
-      <option value="">-- Pilih --</option>
-      <option>Operasional Kribangs</option>
-      <option>Operasional Cemilan</option>
-      <option>Finance</option>
-      <option>HRD</option>
-      <option>Kanvas/Kampas</option>
-    </select>
-    <label>Nama PIC</label><input name="nama" required>
-    <label>Goal Harian</label><input name="goal">
-    <label>Perintah Kerja</label><textarea name="perintah"></textarea>
+  <div class="container">
+    <h2>Form Laporan Harian (Upload Gambar)</h2>
+    <form id="form">
+      <label for="tanggal">Tanggal</label>
+      <input name="tanggal" type="date" required>
+      <label for="divisi">Divisi</label>
+      <select name="divisi" required>
+        <option value="">-- Pilih Divisi --</option>
+        <option value="Operasional Kribangs">Operasional Kribangs</option>
+        <option value="Operasional Cemilan">Operasional Cemilan</option>
+        <option value="Finance">Finance</option>
+        <option value="HRD">HRD</option>
+        <option value="Kanvas/Kampas">Kanvas/Kampas</option>
+      </select>
+      <label>Nama PIC</label>
+      <input name="nama" required>
+      <label>Goal Harian</label>
+      <input name="goal">
+      <label>Perintah Kerja</label>
+      <textarea name="perintah"></textarea>
 
-    <div id="activity-list"></div>
-    <button type="button" onclick="addActivity()">+ Tambah Aktivitas</button>
-    <button type="submit">Kirim Laporan</button>
-  </form>
+      <div id="activity-list"></div>
+      <button type="button" onclick="addActivity()">➕ Tambah Aktivitas</button>
+      <button type="submit">Kirim Laporan</button>
+    </form>
+  </div>
 
   <script>
     let activityCount = 0;
+
     function addActivity() {
       activityCount++;
       const container = document.getElementById("activity-list");
@@ -42,14 +106,19 @@
       div.className = "activity";
       div.innerHTML = `
         <h4>Aktivitas ${activityCount}</h4>
-        <input name="aktivitas${activityCount}" placeholder="Aktivitas">
+        <input name="aktivitas${activityCount}" placeholder="Aktivitas" required>
+        <label>Status</label>
         <select name="status${activityCount}">
           <option value="Selesai">Selesai</option>
           <option value="Belum Selesai">Belum Selesai</option>
         </select>
-        <textarea name="kendala${activityCount}" placeholder="Kendala"></textarea>
-        <textarea name="solusi${activityCount}" placeholder="Solusi"></textarea>
-        <textarea name="lanjut${activityCount}" placeholder="Tindakan Lanjut"></textarea>
+        <label>Kendala</label>
+        <textarea name="kendala${activityCount}"></textarea>
+        <label>Solusi</label>
+        <textarea name="solusi${activityCount}"></textarea>
+        <label>Tindakan Lanjut</label>
+        <textarea name="lanjut${activityCount}"></textarea>
+        <label>Upload Gambar</label>
         <input type="file" name="gambar${activityCount}" accept="image/*" onchange="encodeImageToBase64(this, ${activityCount})">
         <input type="hidden" name="imageBase64${activityCount}" id="imageBase64${activityCount}">
       `;
@@ -79,7 +148,7 @@
         headers: { "Content-Type": "application/json" }
       });
 
-      alert("Terkirim!");
+      alert("Laporan berhasil dikirim!");
       e.target.reset();
       document.getElementById("activity-list").innerHTML = "";
       activityCount = 0;
