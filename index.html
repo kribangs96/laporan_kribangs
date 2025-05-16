@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Pelaporan Divisi - Kribangs Food</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #f7a324, #fddc9b);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      max-width: 700px;
+      width: 100%;
+    }
+    h2 {
+      text-align: center;
+      color: #f7a324;
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: 500;
+      display: block;
+      margin-top: 15px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    input[type="file"] {
+      border: none;
+    }
+    button {
+      background-color: #f7a324;
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      margin-top: 20px;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #d9821b;
+    }
+    .activity {
+      background-color: #fdf5e6;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Pelaporan Harian Divisi</h2>
+    <form id="form">
+      <label for="tanggal">Tanggal</label>
+      <input type="date" id="tanggal" name="tanggal" required>
+
+      <label for="divisi">Divisi</label>
+      <select id="divisi" name="divisi" required>
+        <option value="">-- Pilih Divisi --</option>
+        <option value="Operasional Kribangs">Operasional Kribangs</option>
+        <option value="Operasional Cemilan">Operasional Cemilan</option>
+        <option value="Finance">Finance</option>
+        <option value="HRD">HRD</option>
+        <option value="Kanvas/Kampas">Kanvas/Kampas</option>
+      </select>
+
+      <label for="nama">Nama PIC</label>
+      <input type="text" id="nama" name="nama" placeholder="Nama Penanggung Jawab" required>
+
+      <label for="goal">Goal Harian</label>
+      <input type="text" id="goal" name="goal" placeholder="Contoh: Menyelesaikan rekap laporan...">
+
+      <label for="perintah">Perintah Kerja</label>
+      <textarea id="perintah" name="perintah" rows="2"></textarea>
+
+      <label>Aktivitas Harian & Output</label>
+      <div id="activity-list"></div>
+      <button type="button" onclick="addActivity()">➕ Tambah Aktivitas</button>
+
+      <button type="submit">Kirim Laporan</button>
+    </form>
+  </div>
+  <script>
+    let activityCount = 0;
+    function addActivity() {
+      activityCount++;
+      const container = document.getElementById("activity-list");
+      const div = document.createElement("div");
+      div.classList.add("activity");
+      div.innerHTML = `
+        <label>Aktivitas ${activityCount}</label>
+        <input type="text" name="aktivitas${activityCount}" placeholder="Aktivitas...">
+        <label>Upload Output</label>
+        <input type="file" name="output${activityCount}" accept="image/*">
+        <label>Status</label>
+        <select name="status${activityCount}">
+          <option value="Selesai">Selesai</option>
+          <option value="Belum Selesai">Belum Selesai</option>
+        </select>
+        <label>Kendala</label>
+        <textarea name="kendala${activityCount}" rows="2"></textarea>
+        <label>Solusi</label>
+        <textarea name="solusi${activityCount}" rows="2"></textarea>
+        <label>Tindakan Lanjut</label>
+        <textarea name="lanjut${activityCount}" rows="2"></textarea>
+      `;
+      container.appendChild(div);
+    }
+
+    window.onload = () => addActivity();
+
+    document.getElementById("form").onsubmit = async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      formData.append("activityCount", activityCount);
+
+      await fetch("https://script.google.com/macros/s/AKfycbzQEHumJ8D-Bhp3_9rRTaSN7zYNAbsyiks2BTYkQxNEAAXFh0L8Z-bKqjQtfqghEpUG/exec", {
+        method: "POST",
+        body: formData
+      });
+
+      alert("Laporan berhasil dikirim!");
+      form.reset();
+      document.getElementById("activity-list").innerHTML = "";
+      activityCount = 0;
+      addActivity();
+    };
+  </script>
+</body>
+</html>
