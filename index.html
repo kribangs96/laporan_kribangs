@@ -2,150 +2,153 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Form Pelaporan Divisi - Kribangs Food</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <title>Laporan Harian - Kribangs</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(to right, #f7a324, #fddc9b);
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #fddc9b;
+      padding: 20px;
     }
     .container {
-      background-color: white;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-      max-width: 700px;
-      width: 100%;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 960px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      overflow-x: auto;
     }
     h2 {
       text-align: center;
       color: #f7a324;
       margin-bottom: 20px;
     }
-    label {
-      font-weight: 500;
-      display: block;
-      margin-top: 15px;
-    }
-    input, select, textarea {
+    table {
       width: 100%;
-      padding: 10px;
-      margin-top: 5px;
+      border-collapse: collapse;
+      font-size: 14px;
+      table-layout: fixed;
+      word-wrap: break-word;
+    }
+    th, td {
       border: 1px solid #ccc;
-      border-radius: 10px;
+      padding: 6px 8px;
+      vertical-align: top;
+      text-align: center;
+    }
+    th {
+      background: #f7a324;
+      color: white;
+    }
+    input, select {
+      width: 100%;
+      padding: 5px 6px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    input[type="text"] {
+      height: auto;
+      min-height: 30px;
+    }
+    .status-icon {
+      font-size: 18px;
+      display: block;
+      margin-top: 4px;
+    }
+    .green { color: green; }
+    .red { color: red; }
+    button {
+      padding: 10px 15px;
+      margin-top: 15px;
+      margin-right: 10px;
+      border: none;
+      background: #f7a324;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
       font-size: 14px;
     }
-    input[type="file"] {
-      border: none;
-    }
-    button {
-      background-color: #f7a324;
-      color: white;
-      border: none;
-      padding: 12px;
-      width: 100%;
-      margin-top: 20px;
-      border-radius: 12px;
-      font-size: 16px;
-      cursor: pointer;
-    }
     button:hover {
-      background-color: #d9821b;
-    }
-    .activity {
-      background-color: #fdf5e6;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 10px;
+      background: #e2921f;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Pelaporan Harian Divisi</h2>
-    <form id="form">
-      <label for="tanggal">Tanggal</label>
-      <input type="date" id="tanggal" name="tanggal" required>
+<div class="container" id="laporan">
+  <h2>Laporan Harian – KRIBANGS</h2>
+  <table id="tabel-laporan">
+    <thead>
+      <tr>
+        <th>Jam</th>
+        <th>Aktivitas</th>
+        <th>Status</th>
+        <th>Hasil Sementara / Temuan</th>
+        <th>Tindak Lanjut / Saran</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="tbody-laporan">
+    </tbody>
+  </table>
+  <button onclick="tambahBaris()">➕ Tambah Aktivitas</button>
+  <button onclick="kirimExcel()">📥 Export ke Excel</button>
+</div>
 
-      <label for="divisi">Divisi</label>
-      <select id="divisi" name="divisi" required>
-        <option value="">-- Pilih Divisi --</option>
-        <option value="Operasional Kribangs">Operasional Kribangs</option>
-        <option value="Operasional Cemilan">Operasional Cemilan</option>
-        <option value="Finance">Finance</option>
-        <option value="HRD">HRD</option>
-        <option value="Kanvas/Kampas">Kanvas/Kampas</option>
-      </select>
-
-      <label for="nama">Nama PIC</label>
-      <input type="text" id="nama" name="nama" placeholder="Nama Penanggung Jawab" required>
-
-      <label for="goal">Goal Harian</label>
-      <input type="text" id="goal" name="goal" placeholder="Contoh: Menyelesaikan rekap laporan...">
-
-      <label for="perintah">Perintah Kerja</label>
-      <textarea id="perintah" name="perintah" rows="2"></textarea>
-
-      <label>Aktivitas Harian & Output</label>
-      <div id="activity-list"></div>
-      <button type="button" onclick="addActivity()">➕ Tambah Aktivitas</button>
-
-      <button type="submit">Kirim Laporan</button>
-    </form>
-  </div>
-  <script>
-    let activityCount = 0;
-    function addActivity() {
-      activityCount++;
-      const container = document.getElementById("activity-list");
-      const div = document.createElement("div");
-      div.classList.add("activity");
-      div.innerHTML = `
-        <label>Aktivitas ${activityCount}</label>
-        <input type="text" name="aktivitas${activityCount}" placeholder="Aktivitas...">
-        <label>Upload Output</label>
-        <input type="file" name="output${activityCount}" accept="image/*">
-        <label>Status</label>
-        <select name="status${activityCount}">
+<script>
+  function tambahBaris() {
+    const tbody = document.getElementById("tbody-laporan");
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><input type="text" placeholder="08.00 - 09.30"></td>
+      <td><input type="text" placeholder="Uraian kegiatan"></td>
+      <td>
+        <select onchange="updateStatus(this)">
           <option value="Selesai">Selesai</option>
           <option value="Belum Selesai">Belum Selesai</option>
         </select>
-        <label>Kendala</label>
-        <textarea name="kendala${activityCount}" rows="2"></textarea>
-        <label>Solusi</label>
-        <textarea name="solusi${activityCount}" rows="2"></textarea>
-        <label>Tindakan Lanjut</label>
-        <textarea name="lanjut${activityCount}" rows="2"></textarea>
-      `;
-      container.appendChild(div);
-    }
+        <span class="status-icon">✅</span>
+      </td>
+      <td><input type="text" placeholder="Temuan"></td>
+      <td><input type="text" placeholder="Tindak Lanjut"></td>
+      <td><button onclick="hapusBaris(this)">🗑️</button></td>
+    `;
+    tbody.appendChild(tr);
+  }
 
-    window.onload = () => addActivity();
+  function hapusBaris(btn) {
+    btn.closest("tr").remove();
+  }
 
-    document.getElementById("form").onsubmit = async function(e) {
-      e.preventDefault();
-      const form = e.target;
-      const formData = new FormData(form);
-      formData.append("activityCount", activityCount);
+  function updateStatus(select) {
+    const icon = select.nextElementSibling;
+    icon.textContent = select.value === "Selesai" ? "✅" : "❌";
+    icon.className = select.value === "Selesai" ? "status-icon green" : "status-icon red";
+  }
 
-      await fetch("https://script.google.com/macros/s/AKfycbwNYihtvfDj5Jm3ca-i98BbgwRup0D2W_095kpG2vIF5mGxgaNBeBCGmYduTeVO1RFp/exec", {
-        method: "POST",
-        body: formData
-      });
+  function kirimExcel() {
+    const rows = document.querySelectorAll("#tbody-laporan tr");
+    const data = [["Jam", "Aktivitas", "Status", "Hasil Sementara / Temuan", "Tindak Lanjut / Saran"]];
 
-      alert("Laporan berhasil dikirim!");
-      form.reset();
-      document.getElementById("activity-list").innerHTML = "";
-      activityCount = 0;
-      addActivity();
-    };
-  </script>
+    rows.forEach(row => {
+      const inputs = row.querySelectorAll("input, select");
+      const jam = inputs[0]?.value || "";
+      const aktivitas = inputs[1]?.value || "";
+      const status = inputs[2]?.value || "";
+      const temuan = inputs[3]?.value || "";
+      const saran = inputs[4]?.value || "";
+      data.push([jam, aktivitas, status, temuan, saran]);
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Laporan Perdua Jam");
+    XLSX.writeFile(wb, "Laporan_Perdua_Jam.xlsx");
+  }
+
+  window.onload = tambahBaris;
+</script>
 </body>
 </html>
